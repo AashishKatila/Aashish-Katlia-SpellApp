@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { ENDPOINTS } from "../utils/endpoints";
 import { useFetch } from "../hooks/useFetch";
+import { Loading } from "../components/Loading";
+import { Error } from "../components/Error";
 import type { Spell } from "../types/spells";
 
 const SpellDetails = () => {
@@ -10,36 +12,48 @@ const SpellDetails = () => {
     loading,
     error,
   } = useFetch<Spell>(`${ENDPOINTS.SPELLS}/${id}`);
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!spell) return <p>Spell not found</p>;
 
-  console.log("Spell -", spell);
+  if (loading) return <Loading />;
+  if (error) return <Error message={error} />;
+  if (!spell)
+    return (
+      <p className="text-center text-gray-600 mt-6 font-semibold">
+        Spell not found
+      </p>
+    );
+
   return (
-    <div className="max-w-3xl mx-auto py-20">
-      <h1>
-        <strong>{spell.name}</strong>
-      </h1>
+    <div className="max-w-3xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-4 text-gray-800">{spell.name}</h1>
 
-      <section>
-        <h3>
-          <strong>Description</strong>
+      <section className="mb-6">
+        <h3 className="text-xl font-semibold mb-2 text-gray-700">
+          Description
         </h3>
         {spell.desc.map((line, idx) => (
-          <p key={idx}>{line}</p>
+          <p key={idx} className="text-gray-600 mb-1">
+            {line}
+          </p>
         ))}
       </section>
 
       {spell.higher_level && (
-        <section>
-          <h3>At Higher Levels</h3>
+        <section className="mb-6">
+          <h3 className="text-xl font-semibold mb-2 text-gray-700">
+            At Higher Levels
+          </h3>
           {spell.higher_level.map((line, idx) => (
-            <p key={idx}>{line}</p>
+            <p key={idx} className="text-gray-600 mb-1">
+              {line}
+            </p>
           ))}
         </section>
       )}
 
-      <section>
+      <section className="mb-6 bg-gray-50 p-4 rounded shadow">
+        <h3 className="text-xl font-semibold mb-2 text-gray-700">
+          Spell Details
+        </h3>
         <p>
           <strong>Level:</strong> {spell.level}
         </p>
@@ -47,8 +61,7 @@ const SpellDetails = () => {
           <strong>Range:</strong> {spell.range}
         </p>
         <p>
-          {spell.components.length > 0 && <strong>Components:</strong>}{" "}
-          {spell.components.join(", ")}
+          <strong>Components:</strong> {spell.components.join(", ")}
         </p>
         {spell.material && (
           <p>
@@ -72,12 +85,12 @@ const SpellDetails = () => {
       </section>
 
       {spell.damage?.damage_at_slot_level && (
-        <section>
-          <h3>Damage</h3>
+        <section className="mb-6 bg-gray-50 p-4 rounded shadow">
+          <h3 className="text-xl font-semibold mb-2 text-gray-700">Damage</h3>
           <p>
             <strong>Type:</strong> {spell.damage.damage_type.name}
           </p>
-          <ul>
+          <ul className="list-disc list-inside text-gray-600">
             {Object.entries(spell.damage.damage_at_slot_level).map(
               ([level, dmg]) => (
                 <li key={level}>
@@ -89,20 +102,23 @@ const SpellDetails = () => {
         </section>
       )}
 
-      <section>
+      <section className="mb-6 bg-gray-50 p-4 rounded shadow">
+        <h3 className="text-xl font-semibold mb-2 text-gray-700">
+          Additional Info
+        </h3>
         <p>
           <strong>School:</strong> {spell.school.name}
         </p>
         <p>
-          <strong>Classes:</strong>
+          <strong>Classes:</strong>{" "}
           {spell.classes.map((c) => c.name).join(", ")}
         </p>
         <p>
-          {spell.subclasses.length > 0 && <strong>Subclasses:</strong>}
+          <strong>Subclasses:</strong>{" "}
           {spell.subclasses.map((sc) => sc.name).join(", ")}
         </p>
         <p>
-          <strong>Updated At:</strong>
+          <strong>Updated At:</strong>{" "}
           {new Date(spell.updated_at).toLocaleString()}
         </p>
         <p>

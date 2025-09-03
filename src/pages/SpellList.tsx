@@ -1,19 +1,30 @@
-import { SearchFilter } from "../components/SearchFilter";
 import SpellCard from "../components/SpellCard";
-import { useSearch } from "../context/search-context";
 import { useFetch } from "../hooks/useFetch";
-import type { SpellListResponse } from "../types/spells";
+import { SearchFilter } from "../components/SearchFilter";
+import { useSearch } from "../context/search-context";
 import { ENDPOINTS } from "../utils/endpoints";
+import { useEffect, useState } from "react";
+import { Pagination } from "../components/Pagination";
+import { Loading } from "../components/Loading";
+import { Error } from "../components/Error";
+import type { SpellListResponse } from "../types/spells";
 
 const SpellList = () => {
   const { query, sortOrder } = useSearch();
-
   const { data, loading, error } = useFetch<SpellListResponse>(
     ENDPOINTS.SPELLS
   );
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 21;
+
+  // Reset to page 1 when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, sortOrder]);
+
+  if (loading) return <Loading />;
+  if (error) return <Error message={error} />;
 
   let filtered =
     data?.results.filter((s) => {
@@ -30,14 +41,26 @@ const SpellList = () => {
     });
   }
 
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="mt-4">
       <SearchFilter />
-      <div className="grid grid-cols-3 gap-4 p-4">
-        {filtered?.map((spell) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+        {paginated.map((spell) => (
           <SpellCard key={spell.index} spell={spell} />
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
