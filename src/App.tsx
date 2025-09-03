@@ -4,11 +4,13 @@ import SpellList from "./pages/SpellList";
 import Favourites from "./pages/Favourites";
 import SpellDetails from "./pages/SpellDetails";
 import { SearchProvider } from "./context/search-context";
+import { Header } from "./components/Header";
 
 function App() {
   return (
     <SearchProvider>
       <Router>
+        <Header />
         <Routes>
           <Route path="/" element={<SpellList />} />
           <Route path="/spell/:id" element={<SpellDetails />} />
