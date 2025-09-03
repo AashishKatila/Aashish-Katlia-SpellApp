@@ -8,16 +8,18 @@ import { Header } from "./components/Header";
 
 function App() {
   return (
-    <SearchProvider>
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/" element={<SpellList />} />
-          <Route path="/spell/:id" element={<SpellDetails />} />
-          <Route path="/favourites" element={<Favourites />} />
-        </Routes>
-      </Router>
-    </SearchProvider>
+    <div className="app-container">
+      <SearchProvider>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<SpellList />} />
+            <Route path="/spell/:id" element={<SpellDetails />} />
+            <Route path="/favourites" element={<Favourites />} />
+          </Routes>
+        </Router>
+      </SearchProvider>
+    </div>
   );
 }
 
